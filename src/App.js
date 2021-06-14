@@ -6,12 +6,16 @@ import FlipMove from 'react-flip-move'
 import SendIcon from '@material-ui/icons/Send'
 import IconButton from '@material-ui/core/IconButton'
 import axios from "./axios";
+import Pusher from "pusher-js";
+
+const pusher = new Pusher('a06555855a0276a2e1a5', {
+    cluster: 'eu'
+});
 
 function App() {
-  const [input, setInput] = useState('')
-  const [messages, setMessages] = useState([])
-  const [username, setUsername] = useState('')
-
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState('');
 
     const sync = async () => {
       await axios.get('/retrieve/conversation').then((res) => {
@@ -23,6 +27,14 @@ function App() {
     useEffect(() => {
         sync();
     }, []);
+
+    useEffect(() => {
+        const channel = pusher.subscribe('messages');
+        channel.bind('newMessage', function(data) {
+            // this re renders then we see the next message is coming on
+            sync();
+        })
+    }, [username]);
 
   useEffect(() => {
     setUsername(prompt('Please enter your name 🚀'))
