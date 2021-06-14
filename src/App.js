@@ -31,7 +31,11 @@ function App() {
   const sendMessage = (e) => {
     e.preventDefault()
 
-
+    axios.post('/save/message', {
+        username: username,
+        message: input,
+        timestamp: Date.now(),
+    })
 
     setInput('')
   }
